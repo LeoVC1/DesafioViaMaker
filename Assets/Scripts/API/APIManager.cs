@@ -10,6 +10,8 @@ public class APIManager : MonoBehaviour
 {
 	private readonly string basePath = "http://uniescolas.viamaker.com.br/api";
 
+    public bool debugResponse;
+
     private void Awake()
     {
         RestClient.DefaultRequestHeaders["Authorization"] = "Bearer 8mspL8yN09CgSQ3sgMfwQkfNm2bO64NW2789Wo0EodONKcuKeUtu1taZjG3Wu5XQUi61uxIZiDqxlxuaoZW9LJ5Hj992DNp6H0pk1wA6h4CZdtZkV6fv5xv8mKcFmkQe";
@@ -51,6 +53,8 @@ public class APIManager : MonoBehaviour
         {
             AlunosResponse response = JsonUtility.FromJson<AlunosResponse>(proxy.Text);
 
+            response.turmaId = turmaId;
+
             LogMessage("Response", JsonUtility.ToJson(response, true));
 
             onSucess.Invoke(response);
@@ -67,7 +71,8 @@ public class APIManager : MonoBehaviour
     private void LogMessage(string title, string message)
     {
 #if UNITY_EDITOR
-        EditorUtility.DisplayDialog(title, message, "Ok");
+        if(debugResponse)
+            EditorUtility.DisplayDialog(title, message, "Ok");
 #else
 		Debug.Log(message);
 #endif

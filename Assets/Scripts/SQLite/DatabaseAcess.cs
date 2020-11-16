@@ -81,6 +81,22 @@ public class DatabaseAcess
         return TryExecuteCommand($"UPDATE {tableName} SET {newValues} WHERE {condition}");
     }
 
+    public IDataReader GetData(string tableName, string columns)
+    {
+        IDbCommand dbcmd = db_connection.CreateCommand();
+        dbcmd.CommandText = $"SELECT {columns} FROM {tableName}";
+        IDataReader reader = dbcmd.ExecuteReader();
+        return reader;
+    }
+
+    public IDataReader GetData(string tableName, string columns, string condition)
+    {
+        IDbCommand dbcmd = db_connection.CreateCommand();
+        dbcmd.CommandText = $"SELECT {columns} FROM {tableName} WHERE {condition}";
+        IDataReader reader = dbcmd.ExecuteReader();
+        return reader;
+    }
+
     public IDataReader GetAllData(string tableName)
     {
         IDbCommand dbcmd = db_connection.CreateCommand();

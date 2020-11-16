@@ -30,12 +30,16 @@ public partial class AlunosResponse
 {
     public string sucesso;
 
+    public int turmaId;
+
     public Aluno[] retorno;
 }
 
 [Serializable]
 public partial class Aluno
 {
+    public int turmaId;
+
     public int id;
 
     public string nome;
