@@ -202,10 +202,14 @@ public class DataManager : MonoBehaviour
 
         while (reader.Read())
         {
-            newStudentID = int.Parse(reader[0].ToString()) + 1;
+            int aux = int.Parse(reader[0].ToString()) + 1;
+            if (aux > newStudentID)
+                newStudentID = aux;
         }
 
-        databaseAcess.TryInsertIntoTable("Student", $"SchoolID, ClassID, StudentID, StudentName", $"{1}, {studentClassID}, {newStudentID}, '{studentName}'");
+        print(databaseAcess.TryInsertIntoTable("Student", $"SchoolID, ClassID, StudentID, StudentName", $"{1}, {studentClassID}, {newStudentID}, '{studentName}'"));
+
+        print(newStudentID);
 
         return newStudentID;
     }
