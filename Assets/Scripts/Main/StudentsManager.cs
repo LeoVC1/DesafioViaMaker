@@ -9,13 +9,22 @@ using DG.Tweening;
 public class StudentsManager : MonoBehaviour
 {
     [Header("Object References:")]
+    public DataManager dataManager;
     public StudentObject[] studentPool; //Object Pool pois métodos como Instantiate e Destroy são mais pesados para o processamento em um mobile
     public RectTransform studentsPanel;
+    private Aluno[] currentStudents;
 
     public UnityEvent onDisplayAllStudents;
 
+    public void RefreshStudents()
+    {
+        dataManager.LoadStudentsFromDatabase(HeaderController.instance.classID, DisplayAllStudents);
+    }
+
     public void DisplayAllStudents(Aluno[] students)
     {
+        currentStudents = students;
+
         foreach (StudentObject studentsObject in studentPool)
         {
             studentsObject.gameObject.SetActive(false);

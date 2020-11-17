@@ -7,6 +7,8 @@ using System;
 
 public class StudentObject : MonoBehaviour
 {
+    public ViewStudentModal viewStudentModal;
+
     [SerializeField]
     private TextMeshProUGUI nameText;
 
@@ -22,14 +24,13 @@ public class StudentObject : MonoBehaviour
         nameText.text = studentName;
     }
 
-    //public void ShowAllStudents()
-    //{
-    //    onStartLoadingStudents.Invoke();
-    //    databaseManager.LoadStudents(classID, StudentsCallback);
-    //}
-
-    //private void StudentsCallback(Aluno[] students)
-    //{
-    //    onFinishLoadingStudents.Invoke(students);
-    //}
+    public void ViewStudent()
+    {
+        viewStudentModal.OpenModal(new Aluno
+        {
+            turmaId = classID,
+            id = studentID,
+            nome = studentName
+        });
+    }
 }

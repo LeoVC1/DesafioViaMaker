@@ -41,7 +41,9 @@ public class DatabaseAcess
         }
         catch
         {
+#if UNITY_EDITOR
             Debug.Log("Comando não executado: " + commandText);
+#endif
             return false;
         }
     }
@@ -110,6 +112,11 @@ public class DatabaseAcess
         bool sucess = TryExecuteCommand("DROP TABLE IF EXISTS " + tableName);
 
         Debug.Log(sucess ? $"Tabela {tableName} deletada com sucesso." : $"Falha ao deletar a tabela {tableName}");
+    }
+
+    public void DeleteData(string tableName, string condition)
+    {
+        TryExecuteCommand($"DELETE FROM {tableName} WHERE {condition}");
     }
 
     public void Close()

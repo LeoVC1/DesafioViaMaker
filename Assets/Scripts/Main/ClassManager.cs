@@ -6,6 +6,9 @@ using UnityEngine;
 using UnityEngine.Events;
 using DG.Tweening;
 
+/// <summary>
+/// Busca as turmas na Database e as lista atraves do Método DisplayAllClasses
+/// </summary>
 public class ClassManager : MonoBehaviour
 {
     [Header("Object References:")]

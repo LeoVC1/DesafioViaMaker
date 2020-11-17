@@ -27,7 +27,7 @@ public class ModalController : MonoBehaviour
             OpenModal();
     }
 
-    public void OpenModal()
+    public virtual void OpenModal()
     {
         if (isOpen)
             return;
@@ -39,7 +39,7 @@ public class ModalController : MonoBehaviour
         onOpen.Invoke();
     }
 
-    public void CloseModal()
+    public virtual void CloseModal()
     {
         if (!isOpen)
             return;

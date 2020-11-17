@@ -7,6 +7,9 @@ using UnityEngine.Events;
 using System.Collections;
 using System.Collections.Generic;
 
+/// <summary>
+/// Classe que gerencia os principais métodos que buscam dados na API e os salvam na Database
+/// </summary>
 public class DataManager : MonoBehaviour
 {
     public APIManager apiManager;
@@ -25,6 +28,14 @@ public class DataManager : MonoBehaviour
             return;
         }
 
+        apiManager.GetEscola(OnGetEscola, OnError);
+    }
+
+    /// <summary>
+    /// Força um carregamento de dados da API.
+    /// </summary>
+    public void ForceLoadData()
+    {
         apiManager.GetEscola(OnGetEscola, OnError);
     }
 
@@ -138,55 +149,21 @@ public class DataManager : MonoBehaviour
     /// </summary>
     /// <param name="turma"></param>
     /// <returns></returns>
-    private IEnumerator LoadStudentsOnServer(Turma turma)
+    private IEnumerator LoadStudentsOnServer(Turma turma, bool forceLoad = false)
     {
-        TryLoadStudents(turma.id);
+        CreateStudents(turma.id, null);
         yield return null;
     }
-    #endregion
 
     /// <summary>
-    /// Verifica se há estudantes salvos da turma especificada no banco, se houver, retorna eles, se não busca na API
+    /// Carrega os alunos de uma determinada classe da API
     /// </summary>
     /// <param name="classID"></param>
     /// <param name="onLoadStudents"></param>
-    public void TryLoadStudents(int classID, Action<Aluno[]> onLoadStudents = null)
+    public void CreateStudents(int classID, Action<Aluno[]> onLoadStudents = null)
     {
-        DatabaseAcess databaseAcess = new DatabaseAcess();
-        List<Aluno> students = new List<Aluno>();
-
-        IDataReader reader;
-
-        try
-        {
-            reader = databaseAcess.GetData("Student", "StudentID, StudentName", $"ClassID = {classID}");
-
-            while (reader.Read())
-            {
-                students.Add(new Aluno
-                {
-                    id = int.Parse(reader[0].ToString()),
-                    nome = reader[1].ToString(),
-                    turmaId = classID
-                });
-            }
-        }
-        catch 
-        {
-            Debug.Log("Tabela de estudantes não encontrada.");
-        }
-
-        if(students.Count == 0)
-        {
-            apiManager.GetAlunos(classID, SaveStudents); //Se o banco estiver vazio, tentamos buscar alunos na API
-            this.onLoadStudents = onLoadStudents;
-        }
-        else
-        {
-            onLoadStudents?.Invoke(students.ToArray());
-        }
-
-        databaseAcess.Close();
+        apiManager.GetAlunos(classID, SaveStudents);
+        this.onLoadStudents = onLoadStudents;
     }
 
     /// <summary>
@@ -195,7 +172,6 @@ public class DataManager : MonoBehaviour
     /// <param name="alunosResponse"></param>
     public void SaveStudents(AlunosResponse alunosResponse)
     {
-        //StartCoroutine(SaveStudentsOnDatabase(alunosResponse));
         DatabaseAcess databaseAcess = new DatabaseAcess();
 
         databaseAcess.TryCreateTable("Student", "SchoolID INTEGER, ClassID INTEGER, StudentID PRIMARY KEY NOT NULL, StudentName VARCHAR(255) NOT NULL, FOREIGN KEY (SchoolID) REFERENCES Escola(SchoolID), FOREIGN KEY (ClassID) REFERENCES Class(ClassID)");
@@ -209,6 +185,7 @@ public class DataManager : MonoBehaviour
 
         onLoadStudents?.Invoke(alunosResponse.retorno);
     }
+    #endregion
 
     /// <summary>
     /// Adiciona um novo estudante em um turma especifica
@@ -232,4 +209,41 @@ public class DataManager : MonoBehaviour
 
         return newStudentID;
     }
+
+    /// <summary>
+    /// Carrega os alunos de uma determinada classe da Database
+    /// </summary>
+    /// <param name="classID"></param>
+    /// <param name="onLoadStudents"></param>
+    /// <param name="forceLoad"></param>
+    public void LoadStudentsFromDatabase(int classID, Action<Aluno[]> onLoadStudents = null)
+    {
+        List<Aluno> students = new List<Aluno>();
+
+        DatabaseAcess databaseAcess = new DatabaseAcess();
+
+        IDataReader reader;
+
+        try
+        {
+            reader = databaseAcess.GetData("Student", "StudentID, StudentName", $"ClassID = {classID}");
+
+            while (reader.Read())
+            {
+                students.Add(new Aluno
+                {
+                    id = int.Parse(reader[0].ToString()),
+                    nome = reader[1].ToString(),
+                    turmaId = classID
+                });
+            }
+        }
+        catch
+        {
+            Debug.Log("Tabela de estudantes não encontrada.");
+        }
+
+        onLoadStudents?.Invoke(students.ToArray());
+    }
+
 }

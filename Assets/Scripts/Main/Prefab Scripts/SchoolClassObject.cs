@@ -29,7 +29,7 @@ public class SchoolClassObject : MonoBehaviour
     public void ShowAllStudents()
     {
         onStartLoadingStudents.Invoke();
-        databaseManager.TryLoadStudents(classID, studentsManager.DisplayAllStudents);
+        databaseManager.LoadStudentsFromDatabase(classID, studentsManager.DisplayAllStudents);
         HeaderController.instance.className.text = nameText.text;
         HeaderController.instance.classID = classID;
     }
